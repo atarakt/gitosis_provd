@@ -22,6 +22,10 @@ class TestGenerateGitosisConfigFile(unittest.TestCase):
         expected = {'hard-img': 'extra_dev1', 'xivo-skaro': 'extra_dev2'}
         self.assertEqual(self.config._get_extra_data(), expected)
 
+    def test_create_skel(self):
+        expected = "[gitosis]\ngitweb = no\ndaemon = no\n"
+        self.assertEqual(self.config._create_skel(), expected)
+
 if __name__ == '__main__':
     unittest.main()
 
