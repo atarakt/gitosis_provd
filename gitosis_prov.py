@@ -30,16 +30,15 @@ class GenerateGitosisConfigFile:
     def _create_repository(self, repository):
         '''If repository is official, it will be browsable by anyone'''
         branch, repo = repository.split('/')
-        title = '[repo %s]\n' % repository 
+        title = '[repo %s]\n' % repository
         owner = 'owner = XiVO Dev Team\n'
         desc = 'description = %s\n' % self.config['repositories'][branch][repo]
         gitweb = 'gitweb = yes\n' if branch == 'official' else ''
         daemon = 'daemon = yes\n' if branch == 'official' else ''
         return title + owner + desc + gitweb + daemon
-    
+
     def _create_config_file(self):
         config_file = open('gitosis.conf', 'w')
         config_file.write(self._create_skel())
         config_file.write(self._create_group('gitosis-admin'))
         config_file.close()
-        
