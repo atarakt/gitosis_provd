@@ -4,25 +4,23 @@ from gitosis_prov import GenerateGitosisConfigFile
 class TestGenerateGitosisConfigFile(unittest.TestCase):
     def setUp(self):
         config = GenerateGitosisConfigFile()
-        self.result = config._get_data()
+        self.config = GenerateGitosisConfigFile()
 
     def test_parse_officials_repo(self):
         expected = ['xivo-skaro', 'xivo-gallifrey']
-        self.assertEqual(self.result['repositories']['officials'], expected)
+        self.assertEqual(self.config._get_officials_repo(), expected)
 
     def test_parse_privates_repo(self):
         expected = ['hard-img', 'hard-code']
-        self.assertEqual(self.result['repositories']['privates'], expected)
+        self.assertEqual(self.config._get_privates_repo(), expected)
 
     def test_parse_dev(self):
         expected = ['dev1', 'dev2']
-        self.assertEqual(self.result['xivo_team']['xivo'], expected)
+        self.assertEqual(self.config._get_team(), expected)
 
     def test_parse_extra(self):
         expected = {'hard-img': 'extra_dev1', 'xivo-skaro': 'extra_dev2'}
-        self.assertEqual(self.result['extra'], expected)
-
-
+        self.assertEqual(self.config._get_extra_data(), expected)
 
 if __name__ == '__main__':
     unittest.main()
