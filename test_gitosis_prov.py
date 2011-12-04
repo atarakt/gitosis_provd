@@ -11,7 +11,7 @@ class TestGenerateGitosisConfigFile(unittest.TestCase):
         expected = {'official/xivo-skaro': 'extra_dev1 extra_dev2', 'private/hard-img': 'extra_dev1'}
         self.assertEqual(self.config._get_extra_options(), expected)
 
-    def test_repositories_names(self):
+    def test_get_repositories_names(self):
         expected = {}
         expected['official/xivo-skaro']     = 'XiVO Skaro'
         expected['official/xivo-gallifrey'] = 'XiVO Gallifrey'
@@ -20,9 +20,39 @@ class TestGenerateGitosisConfigFile(unittest.TestCase):
         result = self.config._get_repositories_names()
         self.assertEqual(result, expected)
 
+    def test_get_core_team_users(self):
+        expected = ['dev1', 'dev2']
+        result   = self.config._get_core_team_users()
+        self.assertEqual(result, expected)
+
+    def test_get_core_team_user_repositories(self):
+        expected = ['misc', 'extra']
+        result   = self.config._get_core_team_user_repositories('dev1')
+        self.assertEqual(result, expected)
+
+    def test_get_people_repository(self):
+        expected = 'people/dev1/misc'
+        result = self.config._get_repositories('people/dev1/misc')
+        self.assertEqual(result, expected)
+
     def test_create_skel(self):
         expected = '[gitosis]\n'
         self.assertEqual(self.config._create_skel(), expected)
+
+    def test_get_admin_users(self):
+        expected = 'admin1 admin2'
+        result = self.config._get_users('gitosis-admin')
+        self.assertEqual(result, expected)
+
+    def test_get_core_team_user(self):
+        expected = 'dev1 dev2'
+        result = self.config._get_users('xivo-core-team')
+        self.assertEqual(result, expected)
+
+    def test_get_core_team_extra_data(self):
+        expected = {'real_name': 'first dev', 'extra_repo': 'misc extra'}
+        result = self.config._get_user_extra_data('dev1')
+        self.assertEqual(result, expected)
 
     def test_create_admin_group(self):
         title    = '[group gitosis-admin]\n'
@@ -55,6 +85,14 @@ class TestGenerateGitosisConfigFile(unittest.TestCase):
         result   = self.config._create_group('private/hard-img')
         self.assertEqual(result, expected)
 
+    def test_create_group_people(self):
+        title    = '[group people/dev1/misc]\n'
+        writable = 'writable = people/dev1/misc\n'
+        members  = 'members = dev1\n' 
+        expected = title + writable + members + '\n'
+        result   = self.config._create_group('people/dev1/misc')
+        self.assertEqual(result, expected)
+
     def test_create_official_repository(self):
         title    = '[repo official/xivo-skaro]\n'
         owner    = 'owner = XiVO Dev Team\n'
@@ -71,6 +109,13 @@ class TestGenerateGitosisConfigFile(unittest.TestCase):
         desc     = 'description = Hardware img\n'
         expected = title + owner + desc + '\n'
         result   = self.config._create_repository('private/hard-img')
+        self.assertEqual(result, expected)
+
+    def test_create_people_repo(self):
+        title = '[repo people/dev1/misc]\n'
+        owner = 'owner = first dev\n'
+        expected = title + owner + '\n'
+        result   = self.config._create_repository('people/dev1/misc')
         self.assertEqual(result, expected)
 
     def test_write_config_file(self):
