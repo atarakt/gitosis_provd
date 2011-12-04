@@ -8,7 +8,7 @@ class TestGenerateGitosisConfigFile(unittest.TestCase):
         self.config = GenerateGitosisConfigFile()
 
     def test_parse_extra(self):
-        expected = {'official/xivo-skaro': 'extra_dev1'}
+        expected = {'official/xivo-skaro': 'extra_dev1 extra_dev2', 'private/hard-img': 'extra_dev1'}
         self.assertEqual(self.config._get_extra_options(), expected)
 
     def test_repositories_names(self):
@@ -39,14 +39,21 @@ class TestGenerateGitosisConfigFile(unittest.TestCase):
         result   = self.config._create_group('xivo-core-team')
         self.assertEqual(result, expected)
 
-    def test_create_group_for_repository(self):
+    def test_create_group_for_repository_with_two_extra_users(self):
         title    = '[group official/xivo-skaro]\n'
         writable = 'writable = official/xivo-skaro\n'
-        members  = 'members = @xivo-core-team extra_dev1\n' 
+        members  = 'members = @xivo-core-team extra_dev1 extra_dev2\n' 
         expected = title + writable + members + '\n'
         result   = self.config._create_group('official/xivo-skaro')
         self.assertEqual(result, expected)
 
+    def test_create_group_for_repository_with_one_extra_user(self):
+        title    = '[group private/hard-img]\n'
+        writable = 'writable = private/hard-img\n'
+        members  = 'members = @xivo-core-team extra_dev1\n' 
+        expected = title + writable + members + '\n'
+        result   = self.config._create_group('private/hard-img')
+        self.assertEqual(result, expected)
 
     def test_create_official_repository(self):
         title    = '[repo official/xivo-skaro]\n'
@@ -67,7 +74,8 @@ class TestGenerateGitosisConfigFile(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_write_config_file(self):
-        os.remove('gitosis.conf')
+        if os.path.isfile('gitosis.conf'):
+            os.remove('gitosis.conf')
         self.config._create_config_file()
         self.assertTrue(os.path.isfile('gitosis.conf'))
 

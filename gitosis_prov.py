@@ -2,18 +2,23 @@ from configobj import ConfigObj
 
 class GenerateGitosisConfigFile:
     def __init__(self):
-        config_file          = 'repositories.conf'
-        self.config          = ConfigObj(config_file)
+        config_file = 'repositories.conf'
+        self.config = ConfigObj(config_file)
 
     def _get_users(self, group):
         path = group.split('/')[0]
         if path == 'official' or path == 'private':
             users = ['@xivo-core-team']
             if self._get_extra_options().has_key(group):
-                users.append(self._get_extra_options().get(group))
+                extra_users = self._get_extra_options().get(group)
+                users.append(extra_users)
+            users = ' '.join(users)
+
         else:
             users = self.config['groups'][group]
-        return ' '.join(users)
+            if isinstance(users, dict):
+                users = ' '.join(users.keys())
+        return users
 
     def _get_extra_options(self):
         return self.config['extra_options']
